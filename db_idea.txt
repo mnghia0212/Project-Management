@@ -1,0 +1,42 @@
+Tasks {
+  id: string,
+  title: string,
+  description: string,
+  status: "todo" | "working" | "review" | "done",
+  priority: "low" | "medium" | "high",
+  dueDate: DateTime,
+  createdAt: DateTime,
+  updatedAt: DateTime,
+  completedOn: DateTime
+  department: string (Options),     
+  assigneeIds: string Member Ids[],     
+  sharedToIds: string Member Ids[], 
+  creatorId: string,         
+  attachments: string[],    
+  comments: string Comment Ids[], 
+  childTaskIds: string Task Ids[],
+}
+
+
+Members {
+  id: string,             
+  name: string,           
+  email: string,          
+  passwordHash?: string,   
+  role: "admin" | "member" | "manager",  
+  departmentId?: string,  
+  avatarUrl?: string,    
+  createdAt: Date,
+  updatedAt: Date,
+  lastLogin?: Date
+}
+
+
+Comments {
+  id: string,         				// ID duy nhất
+  taskId: string,     				// Liên kết tới task
+  authorId: string Member Id,  		// Người viết comment (link tới Members.id)
+  content: string,    				// Nội dung comment
+  createdAt: Date,
+  updatedAt: Date
+}
