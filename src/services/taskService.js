@@ -4,12 +4,12 @@ import { collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, doc, serverT
 const taskCol = collection(db, "tasks")
 
 // CREATE
-export const createTask = async (task) => {
-  return await addDoc(taskCol, {
-    ...task,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+export const createTask = async (task) => {	
+	return await addDoc(taskCol, { 
+		...task,
+		createdAt: serverTimestamp(),
+		updatedAt: serverTimestamp(),
+  	});
 };
 
 // READ All

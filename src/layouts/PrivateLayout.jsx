@@ -16,18 +16,6 @@ function PrivateLayout() {
 		}
 	};
 
-	const renderNavLink = (to, label) => {
-		return (
-			<Link
-				key={to}
-				to={to}
-				className="text-[var(--text-primary)] hover:bg-[var(--primary)] hover:text-[var(--text-white)] p-2 rounded font-medium"
-			>
-				{label}
-			</Link>
-		);
-	}
-
 	return (
 		<div className="flex h-screen">
 			<nav className="w-64 bg-[var(--background)] text-white flex flex-col p-4 space-y-1 border-r-1 border-[var(--divider)]">
@@ -60,6 +48,18 @@ function PrivateLayout() {
 			</main>
 		</div>
 	);
+}
+
+const renderNavLink = (to, label) => {
+		return (
+			<Link
+				key={to}
+				to={to}
+				className="text-[var(--text-primary)] hover:bg-[var(--primary)] hover:text-[var(--text-white)] p-2 rounded font-medium"
+			>
+				{label}
+			</Link>
+		);
 }
 
 export default PrivateLayout;

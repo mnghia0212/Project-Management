@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 firebase.js
+db_idea.txt
 
 # Editor directories and files
 .vscode/*

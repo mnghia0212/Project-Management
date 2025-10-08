@@ -13,7 +13,16 @@
   --surface: #f5f5f5;
   --text-primary: #0f172a;
   --text-secondary: #64748b;
+  --text-blur: #94a3b8;
   --text-white: #ffffff;
   --divider: #e7ebf0;
   --background: #ffffff;
+
+
+  /* task tone */
+  --task-number: #64748b;
+  --task-open:  #0f172a;
+  --task-working: #2563eb;
+  --task-review: #d530ac;
+  --task-done: #10b981;
 }

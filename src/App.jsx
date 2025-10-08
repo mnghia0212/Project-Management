@@ -10,6 +10,7 @@ import Task from "./pages/Task";
 import PublicLayout from "./layouts/PublicLayout";
 import PrivateLayout from "./layouts/PrivateLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Profile from "./pages/Profile";
 
 function App() {
     const { user, loading } = useAuth();
@@ -20,7 +21,7 @@ function App() {
 
     return (
         <>
-            <Toaster /> {/* Thêm dòng này */}
+            <Toaster/>
             <Router>
                 <Routes>
                     {/* Public (chưa login) */}
@@ -43,6 +44,7 @@ function App() {
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/tasks" element={<Task />} />
                         <Route path="/members" element={<Member />} />
+						<Route path="/profile" element={<Profile/>} />
                     </Route>
                     )}
                 </Routes>

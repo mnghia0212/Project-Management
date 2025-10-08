@@ -10,7 +10,6 @@ Tasks {
   completedOn: DateTime
   department: string (Options),     
   assigneeIds: string Member Ids[],     
-  sharedToIds: string Member Ids[], 
   creatorId: string,         
   attachments: string[],    
   comments: string Comment Ids[], 

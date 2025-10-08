@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getTasks, createTask, updateTask, deleteTask } from "../services/taskService";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function useTasks() {
   const [tasks, setTasks] = useState([]);
@@ -7,7 +9,19 @@ export default function useTasks() {
 
   // Load tasks
   useEffect(() => {
-    fetchTasks();
+    const unsubscribe = onSnapshot(
+      collection(db, "tasks"),
+      (snapshot) => {
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setTasks(data);
+        setLoading(false);
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
   const fetchTasks = async () => {
@@ -32,5 +46,5 @@ export default function useTasks() {
     fetchTasks();
   };
 
-  return { tasks, loading, addTask, editTask, removeTask };
+  return { tasks, setTasks, loading, setLoading, addTask, editTask, removeTask };
 }
