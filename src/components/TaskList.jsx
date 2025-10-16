@@ -4,17 +4,23 @@ import useTasks from "../hooks/useTasks";
 import Spinner from "../components/Spinner";
 import TaskCard from "./TaskCard";
 import TaskDrawer from "../components/TaskDrawer";
+import { useToggle } from "../hooks/useToggle";
 
 const taskStatus = ["open", "working", "review", "done"];
 
 const TaskList = () => {
+	const { isOpen, isLoading, open, close, onSubmit } = useToggle();
 	const { loading, tasks } = useTasks();
-	const [showDrawer, setShowDrawer] = useState(false);
 	const [selectedTask, setSelectedTask] = useState(null);
 
 	const filterTasksByStatus = (status) => {
 		return tasks.filter((task) => task.status === status);
 	};
+
+	const handleCLoseDrawer = () => {
+		setSelectedTask(null);
+		close();
+	}
 
 	return (
 		<div className="flex-1 grid grid-cols-4 gap-7 bg-[var(--surface)] py-4 px-7 overflow-y-auto scrollbar">
@@ -45,7 +51,7 @@ const TaskList = () => {
 										task={task}
 										onClick={() => {
 											setSelectedTask(task);
-											setShowDrawer(true);
+											open();
 										}}
 									/>
 								))}
@@ -54,7 +60,13 @@ const TaskList = () => {
 					);
 				})
 			)}
-			<TaskDrawer showDrawer={showDrawer} setShowDrawer={setShowDrawer} task={selectedTask}/>
+			<TaskDrawer 
+				task={selectedTask} 
+				isOpen={isOpen} 
+				isLoading={isLoading} 
+				close={handleCLoseDrawer} 
+				onSubmit={onSubmit}
+			/>
 		</div>
 	);
 };

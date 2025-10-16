@@ -1,5 +1,5 @@
 import React from "react";
-import Modal from "./Modal";
+import TaskDrawer from "./TaskDrawer";
 
 const TaskCard = ({ task, onClick }) => {
 	return (
@@ -35,7 +35,7 @@ const TaskCard = ({ task, onClick }) => {
 				)}
 			</div>
 
-			<Modal task={task} />
+			<TaskDrawer task={task} />
 		</div>
 	);
 };

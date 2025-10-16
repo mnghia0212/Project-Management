@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { Toaster } from "react-hot-toast"; // Thêm dòng này
+import { Toaster } from "react-hot-toast";
 import { useAuth } from "./hooks/useAuth";
 import Dashboard from "./pages/Dashboard";
 import Member from "./pages/Member";

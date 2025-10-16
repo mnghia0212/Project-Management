@@ -1,25 +1,21 @@
-import React, { useState } from "react";
-import {
-	FaRegBell,
-} from "react-icons/fa6";
+import { FaRegBell } from "react-icons/fa6";
 import avaTest from "../assets/react.svg";
-import Modal from "./Modal";
-import QuickTaskForm from "./QuickTaskForm";
-import { useAuth } from "../hooks/useAuth";
+import QuickTaskModal from "./modals/QuickTaskModal";
+import { useToggle } from "../hooks/useToggle";
 
 const Header = ({ tabName }) => {
-	const { user } = useAuth();
-	const [showModal, setShowModal] = useState(false);
+  	const { isOpen, isLoading, open, close, onSubmit } = useToggle();
+
 	return (
 		<div className="mb-4">
 			<div className="flex justify-between items-center p-5">
 				<h1 className="text-3xl font-semibold">{tabName}</h1>
 				<div className="flex items-center space-x-5">
 					<button
-						onClick={() => setShowModal(true)}
+						onClick={open}
 						className="flex items-center gap-2 bg-[var(--primary)] hover:bg-[var(--hover)] text-white px-4 py-2 rounded"
 					>
-						<span>Quick Task</span>
+						Quick Task
 					</button>
 
 					<button className="text-gray-800 p-2">
@@ -31,17 +27,10 @@ const Header = ({ tabName }) => {
 						alt="User Avatar"
 						className="w-8 h-8 rounded-full"
 					/>
-
 				</div>
 			</div>
 			<hr className="border-t-2 border-[var(--divider)]" />
-			<Modal
-				showModal={showModal}
-				setShowModal={setShowModal}
-				title={"New Task"}
-			>
-				<QuickTaskForm />
-			</Modal>
+			<QuickTaskModal isOpen={isOpen} isLoading={isLoading} close={close} open={open} onSubmit={onSubmit}/>
 		</div>
 	);
 };
