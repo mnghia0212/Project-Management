@@ -3,17 +3,22 @@ import TaskDrawer from "./TaskDrawer";
 
 const TaskCard = ({ task, onClick }) => {
 	return (
-		<div key={task.id} className="bg-white p-3 rounded-xl shadow cursor-pointer" onClick={onClick}>
-			<div className="flex justify-between items-center mb-1 gap-2">
-				<h3 className="font-bold">{task.title}</h3>
-				<div
-					className={`
-						h-3 w-3 rounded-full
-						${task.priority === "low" ? "bg-green-500" : ""}
-						${task.priority === "medium" ? "bg-yellow-500" : ""}
-						${task.priority === "high" ? "bg-red-500" : ""}
-					`}
-				></div>
+		<div
+			key={task.id}
+			className="bg-white p-3 rounded-xl shadow cursor-pointer"
+			onClick={onClick}
+		>
+			<div className="flex justify-between items-center mb-1 h-auto space-x-2">
+				<div className="flex-1">
+					<h3 className="font-semibold break-all line-clamp-5">{task.title}</h3>
+				</div>
+					<div
+						className={`rounded-full w-3 h-3 self-start
+			  ${task.priority === "high" ? "bg-red-500" : ""}
+			  ${task.priority === "medium" ? "bg-yellow-500" : ""}
+			  ${task.priority === "low" ? "bg-green-500" : ""}`}
+					>
+				</div>
 			</div>
 
 			<p className="text-sm text-gray-600">{task.description}</p>

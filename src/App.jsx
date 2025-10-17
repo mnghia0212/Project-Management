@@ -13,11 +13,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
 
 function App() {
-    const { user, loading } = useAuth();
+    const { userAuth, loading } = useAuth();
 
     if (loading) return <p>Loading...</p>;
 
-    console.log(user);
+    console.log(userAuth);
 
     return (
         <>
@@ -25,7 +25,7 @@ function App() {
             <Router>
                 <Routes>
                     {/* Public (chưa login) */}
-                    {!user && (
+                    {!userAuth && (
                     <Route element={<PublicLayout />}>
                         <Route path="/" element={<Login />} />
                         <Route path="/signup" element={<Signup />} />
@@ -33,7 +33,7 @@ function App() {
                     )}
 
                     {/* Private (sau khi login) */}
-                    {user && (
+                    {userAuth && (
                     <Route
                         element={
                         <ProtectedRoute>

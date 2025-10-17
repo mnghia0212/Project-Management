@@ -1,7 +1,28 @@
-import { CircularProgress } from "@mui/material";
-import React, { useState } from "react";
+import { Autocomplete, Box, CircularProgress, FormControl } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import TextField from "@mui/material/TextField";
+import Chip from "@mui/material/Chip";
+import Avatar from "@mui/material/Avatar";
+import { getAssigneeOptions } from "../../services/userService";
+import avaTest from "../../assets/react.svg";
+
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+	PaperProps: {
+		style: {
+			maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+			width: 250,
+		},
+	},
+};
+
+
 
 const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
+	const [assigneeOptions, setAssigneeOptions] = useState([]);
+	const [isAssigneesLoading, setIsAssigneesLoading] = useState(true);
 	const [form, setForm] = useState({
 		title: "",
 		description: "",
@@ -12,6 +33,13 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 		attachments: [],
 		...initialData,
 	});
+
+	const handleAssigneeChange = (newValue) => {
+        setForm(prev => ({
+            ...prev,
+            assigneeIds: newValue 
+        }));
+    };
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -33,6 +61,21 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 
 	const showField = (field) =>
 		fields === "all" || (Array.isArray(fields) && fields.includes(field));
+
+	useEffect(() => {
+		const getAssignees = async () => {
+			try {
+				const fetchedAssignees = await getAssigneeOptions();
+				setAssigneeOptions(fetchedAssignees || []);
+			} catch (error) {
+				console.error("Failed to fetch assignees:", error);
+			} finally {
+				setIsAssigneesLoading(false);
+			}
+		};
+
+		getAssignees();
+	}, []); // Chỉ chạy 1 lần
 
 	return (
 		<form className="bg-white space-y-5" onSubmit={handleSubmit}>
@@ -59,7 +102,7 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 				</div>
 			)}
 
-			<div className="grid grid-cols-2 gap-3 items-center">
+			<div className="grid grid-cols-3 gap-3 items-center">
 				{/* Status */}
 				{showField("status") && (
 					<div>
@@ -106,9 +149,7 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 						</select>
 					</div>
 				)}
-			</div>
 
-			<div className="grid grid-cols-2 gap-3 items-center">
 				{/* Due Date */}
 				{showField("dueDate") && (
 					<div>
@@ -128,38 +169,62 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 						/>
 					</div>
 				)}
+			</div>
 
+			<div className="grid grid-cols-2 items-center">
 				{/* Assignees */}
 				{showField("assigneeIds") && (
 					<div>
-						<label
-							htmlFor="assigneeIds"
-							className="text-sm font-semibold text-gray-700"
-						>
-							Assignees
-						</label>
-						<select
-							id="assigneeIds"
-							name="assigneeIds"
-							multiple
-							value={form.assigneeIds}
-							onChange={(e) =>
-								setForm((prev) => ({
-									...prev,
-									assigneeIds: Array.from(
-										e.target.selectedOptions,
-										(opt) => opt.value
-									),
-								}))
-							}
-							className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition"
-						>
-							<option value="u1">User 1</option>
-							<option value="u2">User 2</option>
-							<option value="u3">User 3</option>
-						</select>
+							<Autocomplete
+								multiple
+								id="assignee-autocomplete"
+								options={assigneeOptions}
+								limitTags={3}
+								getOptionLabel={(option) => option.email}
+								value={form.assigneeIds}
+								name="assigneeIds"
+								loading={isAssigneesLoading}
+								disabled={isAssigneesLoading}
+								loadingText="Loading..."
+								noOptionsText="No assignees found"
+								onChange={(event, newValue) => {
+									handleAssigneeChange(newValue);
+								}}
+								disableCloseOnSelect 
+								autoHighlight
+								openOnFocus
+								renderInput={(params) => (
+									<TextField
+										{...params}
+										label="Assign to"
+										placeholder="Find by email"
+									/>
+								)}
+								renderOption={(props, option) => (
+									<Box
+										component="li"
+										sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+										{...props}
+										key={option.id}
+									>
+										<Box>
+											{option.email}
+											<Box
+												component="div"
+												sx={{ fontSize: "0.75rem", color: "text.secondary" }}
+											>
+												{option.email}
+											</Box>
+										</Box>
+									</Box>
+								)}
+							/>
 					</div>
 				)}
+
+				<div>
+
+				</div>
 			</div>
 			{showField("description") && (
 				<div>

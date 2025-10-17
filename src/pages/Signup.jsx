@@ -12,9 +12,13 @@ function Signup() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		if (password !== repassword) {
+			alert("Passwords do not match");
+			return;
+		}
 		try {
 			await signup(email, password);
-			navigate("/dashboard");
+			navigate("/");
 		} catch (err) {
 			alert("Signup failed: " + err.message);
 		}
@@ -87,18 +91,6 @@ function Signup() {
 					{/* Social icons */}
 					<div className="flex justify-center">
 						<GoogleButton type="dark"/>
-						{/* <img
-							src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/pW1SDdKKge/w2d3dvia_expires_30_days.png"
-							className="w-12 h-12 cursor-pointer"
-						/>
-						<img
-							src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/pW1SDdKKge/y8r8ueo7_expires_30_days.png"
-							className="w-12 h-12 cursor-pointer"
-						/>
-						<img
-							src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/pW1SDdKKge/onf39en9_expires_30_days.png"
-							className="w-12 h-12 cursor-pointer"
-						/> */}
 					</div>
 				</div>
 			</main>

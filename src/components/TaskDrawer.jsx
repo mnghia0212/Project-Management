@@ -3,16 +3,14 @@ import { Drawer, Button, Box, Typography, ButtonGroup } from "@mui/material";
 import FullTaskForm from "./forms/FullTaskForm";
 
 
-const TaskDrawer = ({ task, isOpen, isLoading, close, onSubmit }) => {
-	console.log(`task select: ${task}`);
-	
+const TaskDrawer = ({ task, isOpen, isLoading, close, onSubmit }) => {	
 	return (
 		<Drawer
 			anchor="right"
 			open={isOpen}
 			onClose={close}
 		>
-			<Box p={2} width={500} role="presentation">
+			<Box p={2} width={550} role="presentation">
 				{/* Drawer Header */}
 				<header className="flex justify-between items-center">
 					<Typography variant="h6" fontWeight={700}>{task ? "Task Details" : "New Task"}</Typography>

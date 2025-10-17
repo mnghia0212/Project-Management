@@ -36,7 +36,7 @@ const TaskList = () => {
 						<div key={status} className="flex flex-col">
 							{/* Task Status Title*/}
 							<div className="flex justify-between items-center mb-7">
-								{displayTaskNumber(status, tasksByStatus.length)}
+								{displayTask(status, tasksByStatus.length)}
 
 								<button className="text-gray-500">
 									<FaPlus className="w-4 h-4" />
@@ -71,7 +71,7 @@ const TaskList = () => {
 	);
 };
 
-const displayTaskNumber = (taskStatus, taskNumber) => {
+const displayTask = (taskStatus, taskNumber) => {
 	return (
 		<h2
 			className={`

@@ -1,3 +1,17 @@
+
+Users {
+  id: string,             
+  name: string,           
+  email: string,          
+  passwordHash?: string,   
+  role: "admin" | "member" | "manager",  
+  departmentId?: string,  
+  avatarUrl?: string,    
+  createdAt: Date,
+  updatedAt: Date,
+  lastLogin?: Date
+}
+
 Tasks {
   id: string,
   title: string,
@@ -16,19 +30,6 @@ Tasks {
   childTaskIds: string Task Ids[],
 }
 
-
-Members {
-  id: string,             
-  name: string,           
-  email: string,          
-  passwordHash?: string,   
-  role: "admin" | "member" | "manager",  
-  departmentId?: string,  
-  avatarUrl?: string,    
-  createdAt: Date,
-  updatedAt: Date,
-  lastLogin?: Date
-}
 
 
 Comments {
