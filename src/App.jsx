@@ -14,7 +14,6 @@ import Profile from "./pages/Profile";
 
 function App() {
     const { userAuth, loading } = useAuth();
-
     if (loading) return <p>Loading...</p>;
 
     console.log(userAuth);

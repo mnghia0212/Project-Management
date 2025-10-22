@@ -6,7 +6,7 @@ import TaskDrawer from "../components/TaskDrawer";
 
 
 const Task = () => {
-	const { isOpen, isLoading, open, close, onSubmit } = useToggle();
+	const { isOpen, open, close } = useToggle();
 
 	return (
 		<div className="flex flex-col h-screen">
@@ -25,17 +25,15 @@ const Task = () => {
 				<div className="flex gap-5">
 					<button>Table</button>
 					<button>List View</button>
-					</div>
-
+					<button>Kanban</button>
+				</div>
 			</header>
 
 			{/* Drawer New Task */}
 			<TaskDrawer
-				task={null}
-				isOpen={isOpen} 
-				isLoading={isLoading} 
-				close={close} 
-				onSubmit={onSubmit}
+				taskData={null}
+				isOpenDrawer={isOpen}		
+				closeDrawer={close} 
 			/>
 
 			{/* Task List */}

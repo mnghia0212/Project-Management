@@ -9,7 +9,7 @@ import { useToggle } from "../hooks/useToggle";
 const taskStatus = ["open", "working", "review", "done"];
 
 const TaskList = () => {
-	const { isOpen, isLoading, open, close, onSubmit } = useToggle();
+	const { isOpen, open, close } = useToggle();
 	const { loading, tasks } = useTasks();
 	const [selectedTask, setSelectedTask] = useState(null);
 
@@ -21,6 +21,15 @@ const TaskList = () => {
 		setSelectedTask(null);
 		close();
 	}
+
+	const handleOpenDrawer = (task) => {
+		setSelectedTask(task);
+		open();
+	}
+
+	console.log(selectedTask);
+	
+	
 
 	return (
 		<div className="flex-1 grid grid-cols-4 gap-7 bg-[var(--surface)] py-4 px-7 overflow-y-auto scrollbar">
@@ -48,11 +57,8 @@ const TaskList = () => {
 								{tasksByStatus.map((task) => (
 									<TaskCard
 										key={task.id}
-										task={task}
-										onClick={() => {
-											setSelectedTask(task);
-											open();
-										}}
+										taskData={task}
+										onClickTaskCard={() => handleOpenDrawer(task)}
 									/>
 								))}
 							</div>
@@ -61,11 +67,9 @@ const TaskList = () => {
 				})
 			)}
 			<TaskDrawer 
-				task={selectedTask} 
-				isOpen={isOpen} 
-				isLoading={isLoading} 
-				close={handleCLoseDrawer} 
-				onSubmit={onSubmit}
+				taskData={selectedTask} 
+				isOpenDrawer={isOpen} 
+				closeDrawer={handleCLoseDrawer} 
 			/>
 		</div>
 	);

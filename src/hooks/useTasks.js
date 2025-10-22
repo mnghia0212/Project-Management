@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { getTasks, createTask, updateTask, deleteTask } from "../services/taskService";
+import { createTask, updateTask, deleteTask } from "../services/taskService";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function useTasks() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Load tasks
   useEffect(() => {
     const unsubscribe = onSnapshot(
       collection(db, "tasks"),
@@ -19,32 +19,27 @@ export default function useTasks() {
         setTasks(data);
         setLoading(false);
       },
+
+	  (err) => {
+		setError(err);
+		setLoading(false);
+	  }
     );
 
     return () => unsubscribe();
   }, []);
 
-  const fetchTasks = async () => {
-    setLoading(true);
-    const data = await getTasks();
-    setTasks(data);
-    setLoading(false);
-  };
-
   const addTask = async (task) => {
     await createTask(task);
-    fetchTasks();
   };
 
   const editTask = async (id, updates) => {
     await updateTask(id, updates);
-    fetchTasks();
   };
 
   const removeTask = async (id) => {
     await deleteTask(id);
-    fetchTasks();
   };
 
-  return { tasks, setTasks, loading, setLoading, addTask, editTask, removeTask };
+  return { tasks, setTasks, loading, setLoading, error, setError, addTask, editTask, removeTask };
 }
