@@ -21,6 +21,11 @@ export const getTaskById = async (id) => {
   return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
 };
 
+export const getChildableTasks = async (parentTaskId) => {
+  const allTasks = await getTasks();
+  return allTasks.filter(task => task.id !== parentTaskId);
+}
+
 export const updateTask = async (id, updates) => {
   await updateDoc(doc(db, "tasks", id), {
     ...updates,

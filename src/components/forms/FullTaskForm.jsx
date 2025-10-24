@@ -33,6 +33,7 @@ const FullTaskForm = ({ taskData, closeDrawer }) => {
 				"assigneeIds",
 				"attachments",
 				"description",
+				"childTasks",
 			]}
 			initialData={taskData}
 			isLoading={isLoading}

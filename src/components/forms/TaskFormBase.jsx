@@ -1,11 +1,17 @@
-import { Autocomplete, Box, CircularProgress, FormControl } from "@mui/material";
+import {
+	Autocomplete,
+	Box,
+	CircularProgress,
+	FormControl,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
-import { getAssigneeOptions } from "../../services/userService";
-import avaTest from "../../assets/react.svg";
-
+import { getAssignableUsers } from "../../services/userService";
+import { useQueries } from "@tanstack/react-query";
+import { getChildableTasks } from "../../services/taskService";
+import { useAuth } from "../../hooks/useAuth";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -18,11 +24,9 @@ const MenuProps = {
 	},
 };
 
-
-
 const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
-	const [assigneeOptions, setAssigneeOptions] = useState([]);
-	const [isAssigneesLoading, setIsAssigneesLoading] = useState(true);
+	console.log("Initial Data:", initialData);
+	const { userData } = useAuth();
 	const [form, setForm] = useState({
 		title: "",
 		description: "",
@@ -31,18 +35,35 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 		dueDate: "",
 		assigneeIds: [],
 		attachments: [],
+		childTasks: [],
 		...initialData,
 	});
+	
+	console.log("Form State:", form)
+	const formDataQuery = useQueries({
+		queries: [
+			{
+				queryKey: ["members", userData.id],
+				queryFn: () => getAssignableUsers(userData.id),
+				enabled:
+					(Array.isArray(fields) && fields.includes("childTasks")) ||
+					userData.id != null,
+			},
+			{
+				queryKey: ["allTasks", initialData?.id],
+				queryFn: () => getChildableTasks(initialData?.id),
+				enabled:
+					(Array.isArray(fields) && fields.includes("assigneeIds")) ||
+					initialData.id != null,
+			},
+		],
+	});
 
-	const handleAssigneeChange = (newValue) => {
-        setForm(prev => ({
-            ...prev,
-            assigneeIds: newValue 
-        }));
-    };
+	const isFormDataLoading = formDataQuery.some((r) => r.isLoading);
+	const members = formDataQuery[0]?.data;
+	const allTasks = formDataQuery[1]?.data;
 
-	const handleChange = (e) => {
-		const { name, value } = e.target;
+	const handleChange = (name, value) => {
 		setForm((prev) => ({ ...prev, [name]: value }));
 	};
 
@@ -62,20 +83,9 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 	const showField = (field) =>
 		fields === "all" || (Array.isArray(fields) && fields.includes(field));
 
-	useEffect(() => {
-		const getAssignees = async () => {
-			try {
-				const fetchedAssignees = await getAssigneeOptions();
-				setAssigneeOptions(fetchedAssignees || []);
-			} catch (error) {
-				console.error("Failed to fetch assignees:", error);
-			} finally {
-				setIsAssigneesLoading(false);
-			}
-		};
-
-		getAssignees();
-	}, []); // Chỉ chạy 1 lần
+	if (isFormDataLoading) {
+		return <p>Loading form data...</p>;
+	}
 
 	return (
 		<form className="bg-white space-y-5" onSubmit={handleSubmit}>
@@ -93,7 +103,7 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 						id="title"
 						name="title"
 						value={form.title}
-						onChange={handleChange}
+						onChange={(e) => handleChange("title", e.target.value)}
 						required
 						className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition"
 						placeholder="Enter task title"
@@ -116,7 +126,7 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 							id="status"
 							name="status"
 							value={form.status}
-							onChange={handleChange}
+							onChange={(e) => handleChange("status", e.target.value)}
 							className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition"
 						>
 							<option value="open">Open</option>
@@ -140,7 +150,7 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 							id="priority"
 							name="priority"
 							value={form.priority}
-							onChange={handleChange}
+							onChange={(e) => handleChange("priority", e.target.value)}
 							className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition"
 						>
 							<option value="low">Low</option>
@@ -164,67 +174,63 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 							id="dueDate"
 							name="dueDate"
 							value={form.dueDate}
-							onChange={handleChange}
+							onChange={(e) => handleChange("dueDate", e.target.value)}
 							className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition"
 						/>
 					</div>
 				)}
 			</div>
 
-			<div className="grid grid-cols-2 items-center">
+			<div className="block items-center">
 				{/* Assignees */}
 				{showField("assigneeIds") && (
 					<div>
-							<Autocomplete
-								multiple
-								id="assignee-autocomplete"
-								options={assigneeOptions}
-								limitTags={3}
-								getOptionLabel={(option) => option.email}
-								value={form.assigneeIds}
-								name="assigneeIds"
-								loading={isAssigneesLoading}
-								disabled={isAssigneesLoading}
-								loadingText="Loading..."
-								noOptionsText="No assignees found"
-								onChange={(event, newValue) => {
-									handleAssigneeChange(newValue);
-								}}
-								disableCloseOnSelect 
-								autoHighlight
-								openOnFocus
-								renderInput={(params) => (
-									<TextField
-										{...params}
-										label="Assign to"
-										placeholder="Find by email"
-									/>
-								)}
-								renderOption={(props, option) => (
-									<Box
-										component="li"
-										sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-										{...props}
-										key={option.id}
-									>
-										<Box>
+						<Autocomplete
+							multiple
+							id="assignee-autocomplete"
+							options={members || []}
+							limitTags={3}
+							getOptionLabel={(option) => option.email}
+							value={form.assigneeIds}
+							loading={isFormDataLoading}
+							disabled={isFormDataLoading}
+							loadingText="Loading..."
+							noOptionsText="No assignees found"
+							onChange={(event, newValue) => {
+								handleChange("assigneeIds", newValue);
+							}}
+							disableCloseOnSelect
+							autoHighlight
+							openOnFocus
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									label="Assign to"
+									placeholder="Find by email"
+								/>
+							)}
+							renderOption={(props, option) => (
+								<Box
+									component="li"
+									{...props}
+									key={option.id}
+								>
+									<Box>
+										{option.usename || option.email}
+										<Box
+											component="div"
+											sx={{ fontSize: "0.75rem", color: "text.secondary" }}
+										>
 											{option.email}
-											<Box
-												component="div"
-												sx={{ fontSize: "0.75rem", color: "text.secondary" }}
-											>
-												{option.email}
-											</Box>
 										</Box>
 									</Box>
-								)}
-							/>
+								</Box>
+							)}
+						/>
 					</div>
 				)}
 
-				<div>
-
-				</div>
+				<div></div>
 			</div>
 			{showField("description") && (
 				<div>
@@ -239,8 +245,54 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 						id="description"
 						name="description"
 						value={form.description}
-						onChange={handleChange}
+						onChange={(e) => handleChange("description", e.target.value)}
 						className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition"
+					/>
+				</div>
+			)}
+			{showField("childTasks") && (
+				<div>
+					<Autocomplete
+						multiple
+						id="childTaksks-autocomplete"
+						options={allTasks || []}
+						limitTags={3}
+						getOptionLabel={(option) => option.title}
+						value={form.childTasks}
+						loading={isFormDataLoading}
+						disabled={isFormDataLoading}
+						loadingText="Loading..."
+						noOptionsText="No tasks found"
+						onChange={(event, newValue) => {
+							handleChange("childTasks", newValue);
+						}}
+						disableCloseOnSelect
+						autoHighlight
+						openOnFocus
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								label="Add Sub-tasks"
+								placeholder="Find by title"
+							/>
+						)}
+						renderOption={(props, option) => (
+							<Box
+								component="li"
+								{...props}
+								key={option.id}
+							>
+								<Box>
+									{option.title}
+									<Box
+										component="div"
+										sx={{ fontSize: "0.75rem", color: "text.secondary", textTransform: "capitalize"}}
+									>
+										{option.status}
+									</Box>
+								</Box>
+							</Box>
+						)}
 					/>
 				</div>
 			)}

@@ -20,6 +20,11 @@ export const getUserByUid = async (id) => {
   return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
 };
 
+export const getAssignableUsers  = async (currentUserId) => {
+  const allUsers = await getUsers();
+  return allUsers.filter(user => user.id !== currentUserId);
+}
+
 export const updateUser = async (id, updates) => {
   await updateDoc(doc(db, "users", id), {
 	...updates,
