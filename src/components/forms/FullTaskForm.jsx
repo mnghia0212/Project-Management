@@ -1,6 +1,6 @@
 import React from "react";
 import TaskFormBase from "./TaskFormBase";
-import { useCreateTask, useUpdateTask } from "../../hooks/useTaskMutations";
+import { useCreateTask, useUpdateTask } from "../../hooks/mutations/useTaskMutations";
 
 const FullTaskForm = ({ taskData, closeDrawer }) => {
 	const { mutate: createTask, isPending: isCreating } = useCreateTask();

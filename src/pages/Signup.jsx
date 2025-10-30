@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import GoogleButton from "react-google-button";
+import toast from "react-hot-toast";
+import { FaSpinner } from "react-icons/fa6";
 
 function Signup() {
-	const { signup } = useAuth();
+	const { signup, loading, setLoading } = useAuth();
 	const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -12,15 +14,19 @@ function Signup() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		setLoading(true);
 		if (password !== repassword) {
-			alert("Passwords do not match");
+			setLoading(false);
+			toast.error("Passwords do not match");
 			return;
 		}
 		try {
 			await signup(email, password);
 			navigate("/");
 		} catch (err) {
-			alert("Signup failed: " + err.message);
+			toast.error("Signup failed: " + err.message);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -66,9 +72,9 @@ function Signup() {
 							value={repassword}
 							onChange={(e) => setRepassword(e.target.value)}
 							required
-							className="w-full text-sm text-gray-700 border border-gray-300 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#4461F2]"
+							className="w-full text-sm text-gray-700 border border-gray-300 rounded-lg px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-[#4461F2]"
 						/>
-						<div className="flex mb-4 justify-between">
+						<div className="flex mb-8 justify-between">
 							<a href="/" className="text-sm text-[#4461F2] hover:underline">
 								Already have an account?
 							</a>
@@ -76,8 +82,12 @@ function Signup() {
 								Recover Password
 							</a>
 						</div>
-						<button className="w-full bg-[#4461F2] text-white font-bold py-3 rounded-lg shadow-md mb-6">
-							Register
+						<button className="h-12 w-full bg-[#4461F2] text-white font-bold rounded-lg shadow-md mb-6">
+							{loading ? (
+								<FaSpinner className="animate-spin mx-auto" />
+							) : (
+								"Sign Up"
+							)}
 						</button>
 					</form>
 

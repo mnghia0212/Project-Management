@@ -1,21 +1,35 @@
 import { useEffect, useState } from "react";
 import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { signup, login, logout, resetPassword } from "../services/authService";
 import { AuthContext } from "../contexts/AuthContext";
 import { getUserByUid } from "../services/userService";
 
 export const AuthProvider = ({ children }) => {
 	const [userData, setUserData] = useState(null);
 	const [userAuth, setUserAuth] = useState(null);
+	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {			
+		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
 			setUserAuth(currentUser);
+			setError(null);
+			setLoading(true);
+
 			if (currentUser) {
-				const data = await getUserByUid(currentUser.uid);
-				setUserData(data);
+				try {
+					const data = await getUserByUid(currentUser.uid);
+	
+					if (!data) {
+						throw new Error("No user data found");
+					}
+	
+					setUserData(data);
+	
+				} catch (error) {
+					setError(error);
+					setUserData(null);
+				}
 			} else {
 				setUserData(null);
 			}
@@ -28,10 +42,7 @@ export const AuthProvider = ({ children }) => {
 		userAuth,
 		userData,
 		loading,
-		signup,
-		login,
-		logout,
-		resetPassword,
+		error,
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

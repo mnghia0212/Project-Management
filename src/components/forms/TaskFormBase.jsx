@@ -12,6 +12,7 @@ import { getAssignableUsers } from "../../services/userService";
 import { useQueries } from "@tanstack/react-query";
 import { getChildableTasks } from "../../services/taskService";
 import { useAuth } from "../../hooks/useAuth";
+import Spinner from "../Spinner";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -39,7 +40,6 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 		...initialData,
 	});
 	
-	console.log("Form State:", form)
 	const formDataQuery = useQueries({
 		queries: [
 			{
@@ -82,10 +82,6 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 
 	const showField = (field) =>
 		fields === "all" || (Array.isArray(fields) && fields.includes(field));
-
-	if (isFormDataLoading) {
-		return <p>Loading form data...</p>;
-	}
 
 	return (
 		<form className="bg-white space-y-5" onSubmit={handleSubmit}>

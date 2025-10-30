@@ -29,17 +29,6 @@ export default function useTasks() {
     return () => unsubscribe();
   }, []);
 
-  const addTask = async (task) => {
-    await createTask(task);
-  };
 
-  const editTask = async (id, updates) => {
-    await updateTask(id, updates);
-  };
-
-  const removeTask = async (id) => {
-    await deleteTask(id);
-  };
-
-  return { tasks, setTasks, loading, setLoading, error, setError, addTask, editTask, removeTask };
+  return { tasks, setTasks, loading, setLoading, error, setError };
 }

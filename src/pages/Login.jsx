@@ -1,23 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
 import GoogleButton from "react-google-button";
+import { FaSpinner } from "react-icons/fa6";
+import { useLoginMutation } from '../hooks/mutations/useAuthMutations';
 
 function Login() {
-	const { login } = useAuth();
 	const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		try {
-			await login(email, password);
-			navigate("/dashboard");
-		} catch (err) {
-			alert("Login failed: " + err.message);
-		}
-	};
+	
+	const { mutate: loginMutate, isPending: isLoading } = useLoginMutation(navigate); 
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        loginMutate({ email, password });
+    };
 
 	return (
 		<div className="min-h-screen bg-[#F0F4FC] flex flex-col">
@@ -53,9 +51,9 @@ function Login() {
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							required
-							className="w-full text-sm text-gray-700 border border-gray-300 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#4461F2]"
+							className="w-full text-sm text-gray-700 border border-gray-300 rounded-lg px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-[#4461F2]"
 						/>
-						<div className="flex mb-4 justify-between">
+						<div className="flex mb-8 justify-between">
 							<a href="/signup" className="text-sm text-[#4461F2] hover:underline">
 								Dont't have an account?
 							</a>
@@ -63,8 +61,12 @@ function Login() {
 								Recover Password?
 							</a>
 						</div>
-						<button className="w-full bg-[#4461F2] text-white font-bold py-3 rounded-lg shadow-md mb-6">
-							Sign in
+						<button className="h-12 w-full bg-[#4461F2] text-white font-bold rounded-lg shadow-md mb-6">
+							{isLoading ? (
+								<FaSpinner className="animate-spin mx-auto" />
+							) : (
+								"Sign In"
+							)}
 						</button>
 					</form>
 
@@ -75,40 +77,13 @@ function Login() {
 						<div className="flex-1 h-px bg-gray-300"></div>
 					</div>
 
-					{/* Social icons */}
+					{/* Google Login */}
 					<div className="flex justify-center">
 						<GoogleButton type="dark"/>
-						{/* <img
-							src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/pW1SDdKKge/w2d3dvia_expires_30_days.png"
-							className="w-12 h-12 cursor-pointer"
-						/>
-						<img
-							src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/pW1SDdKKge/y8r8ueo7_expires_30_days.png"
-							className="w-12 h-12 cursor-pointer"
-						/>
-						<img
-							src="https://storage.googleapis.com/tagjs-prod.appspot.com/v1/pW1SDdKKge/onf39en9_expires_30_days.png"
-							className="w-12 h-12 cursor-pointer"
-						/> */}
 					</div>
 				</div>
 			</main>
 
-			{/* Footer */}
-			<footer className="bg-white py-4 shadow-inner mt-auto">
-				<div className="container mx-auto flex flex-wrap justify-between items-center text-sm text-gray-600 px-6">
-					<span>© 2024</span>
-					<div className="flex gap-6">
-						<a href="#">About</a>
-						<a href="#">Terms of Use</a>
-						<a href="#">Privacy Policy</a>
-						<a href="#">Cookie Policy</a>
-						<a href="#">Copyright Policy</a>
-						<a href="#">Brand Policy</a>
-						<a href="#">Visitor Controls</a>
-					</div>
-				</div>
-			</footer>
 		</div>
 	);
 }
