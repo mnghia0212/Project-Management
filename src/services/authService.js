@@ -6,8 +6,8 @@ import { serverTimestamp } from "firebase/firestore";
 export const signup = async (email, password) => {
 	const res = await createUserWithEmailAndPassword(auth, email, password);
 	const user = res.user;
-	
-	await addUser({
+
+	const newUser = {
 		id: user.uid,
 		email: user.email,
 		password: password,
@@ -19,7 +19,8 @@ export const signup = async (email, password) => {
 		lastLoginAt: serverTimestamp(),
 		updatedAt: serverTimestamp(),
 		passwordUpdatedAt: serverTimestamp(),
-	});
+	};
+	await addUser(newUser);
 
 	return res;
 }

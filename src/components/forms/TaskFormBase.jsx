@@ -4,8 +4,9 @@ import {
 	CircularProgress,
 	FormControl,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
+import MenuItem from '@mui/material/MenuItem';
 import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 import { getAssignableUsers } from "../../services/userService";
@@ -25,6 +26,19 @@ const MenuProps = {
 	},
 };
 
+const status = [
+	{ value: 'open', label: 'Open' },
+	{ value: 'working', label: 'Working' },
+	{ value: 'done', label: 'Done' },
+	{ value: 'review', label: 'Review' },
+];
+
+const priority = [
+	{ value: 'low', label: 'Low' },
+	{ value: 'medium', label: 'Medium' },
+	{ value: 'high', label: 'High' },
+];
+
 const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 	console.log("Initial Data:", initialData);
 	const { userData } = useAuth();
@@ -39,7 +53,7 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 		childTasks: [],
 		...initialData,
 	});
-	
+
 	const formDataQuery = useQueries({
 		queries: [
 			{
@@ -87,73 +101,76 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 		<form className="bg-white space-y-5" onSubmit={handleSubmit}>
 			{/* Title */}
 			{showField("title") && (
-				<div>
-					<label
-						htmlFor="title"
-						className="text-sm font-semibold text-gray-700 flex items-center gap-1"
-					>
-						Task Title <span className="text-red-500">*</span>
-					</label>
-					<input
-						type="text"
+				<Box
+					component="form"
+					noValidate
+					autoComplete="on"
+				>
+					<TextField
 						id="title"
+						label="Title"
+						variant="outlined"
+						type="text"
 						name="title"
 						value={form.title}
 						onChange={(e) => handleChange("title", e.target.value)}
 						required
 						className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition"
 						placeholder="Enter task title"
-						autoFocus
+						focused={true}
 					/>
-				</div>
+				</Box>
 			)}
 
 			<div className="grid grid-cols-3 gap-3 items-center">
 				{/* Status */}
 				{showField("status") && (
-					<div>
-						<label
-							htmlFor="status"
-							className="text-sm font-semibold text-gray-700"
-						>
-							Status
-						</label>
-						<select
+					<Box
+						component="form"
+						noValidate
+						autoComplete="on"
+					>
+						<TextField
 							id="status"
-							name="status"
+							select
+							label="Status"
+							defaultValue="Open"
 							value={form.status}
 							onChange={(e) => handleChange("status", e.target.value)}
 							className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition"
 						>
-							<option value="open">Open</option>
-							<option value="working">Working</option>
-							<option value="review">Review</option>
-							<option value="done">Done</option>
-						</select>
-					</div>
+						{status.map((option) => (
+							<MenuItem key={option.value} value={option.value}>
+							{option.label}
+							</MenuItem>
+						))}
+						</TextField>
+					</Box>
 				)}
 
 				{/* Priority */}
 				{showField("priority") && (
-					<div>
-						<label
-							htmlFor="priority"
-							className="text-sm font-semibold text-gray-700"
-						>
-							Priority
-						</label>
-						<select
+					<Box
+						component="form"
+						noValidate
+						autoComplete="on"
+					>
+						<TextField
 							id="priority"
-							name="priority"
+							select
+							label="Priority"
+							defaultValue="Low"
 							value={form.priority}
 							onChange={(e) => handleChange("priority", e.target.value)}
 							className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition"
 						>
-							<option value="low">Low</option>
-							<option value="medium">Medium</option>
-							<option value="high">High</option>
-						</select>
-					</div>
+						{priority.map((option) => (
+							<MenuItem key={option.value} value={option.value}>
+							{option.label}
+							</MenuItem>
+						))}
+						</TextField>
+					</Box>
 				)}
 
 				{/* Due Date */}
@@ -206,11 +223,7 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 								/>
 							)}
 							renderOption={(props, option) => (
-								<Box
-									component="li"
-									{...props}
-									key={option.id}
-								>
+								<Box component="li" {...props} key={option.id}>
 									<Box>
 										{option.usename || option.email}
 										<Box
@@ -273,16 +286,16 @@ const TaskFormBase = ({ initialData = {}, onSubmit, fields, isLoading }) => {
 							/>
 						)}
 						renderOption={(props, option) => (
-							<Box
-								component="li"
-								{...props}
-								key={option.id}
-							>
+							<Box component="li" {...props} key={option.id}>
 								<Box>
 									{option.title}
 									<Box
 										component="div"
-										sx={{ fontSize: "0.75rem", color: "text.secondary", textTransform: "capitalize"}}
+										sx={{
+											fontSize: "0.75rem",
+											color: "text.secondary",
+											textTransform: "capitalize",
+										}}
 									>
 										{option.status}
 									</Box>

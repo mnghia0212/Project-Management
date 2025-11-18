@@ -6,29 +6,24 @@ import toast from "react-hot-toast";
 import { FaSpinner } from "react-icons/fa6";
 
 function Signup() {
-	const { signup, loading, setLoading } = useAuth();
-	const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [repassword, setRepassword] = useState("");
 
+	const navigate = useNavigate();
+
+	const { signup, isLoading } = useAuth();
+
 	const handleSubmit = async (e) => {
-		e.preventDefault();
-		setLoading(true);
-		if (password !== repassword) {
-			setLoading(false);
-			toast.error("Passwords do not match");
-			return;
-		}
-		try {
-			await signup(email, password);
-			navigate("/");
-		} catch (err) {
-			toast.error("Signup failed: " + err.message);
-		} finally {
-			setLoading(false);
-		}
-	};
+        e.preventDefault();
+        try {
+            await signup(email, password, repassword);
+            toast.success("Account created successfully!");
+            navigate("/");
+        } catch (err) {
+            toast.error(err.message || "Signup failed");
+        }
+    };
 
 	return (
 		<div className="min-h-screen bg-[#F0F4FC] flex flex-col">
@@ -83,7 +78,7 @@ function Signup() {
 							</a>
 						</div>
 						<button className="h-12 w-full bg-[#4461F2] text-white font-bold rounded-lg shadow-md mb-6">
-							{loading ? (
+							{isLoading ? (
 								<FaSpinner className="animate-spin mx-auto" />
 							) : (
 								"Sign Up"

@@ -1,21 +1,29 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import GoogleButton from "react-google-button";
 import { FaSpinner } from "react-icons/fa6";
-import { useLoginMutation } from '../hooks/mutations/useAuthMutations';
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function Login() {
-	const navigate = useNavigate();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
-	
-	const { mutate: loginMutate, isPending: isLoading } = useLoginMutation(navigate); 
+	const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+	const { login, isLoading } = useAuth();
+
+	const handleSubmit = async (e) => {
         e.preventDefault();
-        loginMutate({ email, password });
+        try {
+            await login(email, password);
+            toast.success("Logged in successfully!");
+            navigate("/");
+        } catch (err) {
+            toast.error(err.message || "Login failed");
+        }
     };
+
 
 	return (
 		<div className="min-h-screen bg-[#F0F4FC] flex flex-col">

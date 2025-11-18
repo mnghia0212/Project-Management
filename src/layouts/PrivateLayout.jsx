@@ -1,20 +1,22 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import logo from "../assets/react.svg";
 import { useAuth } from "../hooks/useAuth";
+import toast from "react-hot-toast";
 
-function PrivateLayout() {
-	const { logout } = useAuth();
+const PrivateLayout = () => {
+	const { logout, isloading } = useAuth();
 	const navigate = useNavigate();
 	
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		try {
-			await logout();
-			navigate("/");
-		} catch (err) {
-			alert("Logout failed: " + err.message);
-		}
-	};
+	const handleLogoutClick = async (e) => {
+        e.preventDefault();
+        try {
+            await logout();
+            toast.success("Logged out successfully!");
+            navigate("/login");
+        } catch (err) {
+            toast.error(err.message || "Logout failed");
+        }
+    };
 
 	return (
 		<div className="flex h-screen">
@@ -37,8 +39,12 @@ function PrivateLayout() {
 					{renderNavLink("/profile", "Profile")}
 				</div>
 
-				<button onClick={handleSubmit} className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-					Log out
+				<button onClick={handleLogoutClick} className="h-12 w-full bg-[#4461F2] text-white font-bold rounded-lg shadow-md mb-6">
+					{isloading ? (
+						<FaSpinner className="animate-spin mx-auto" />
+					) : (
+						"Log Out"
+					)}
 				</button>
 			</nav>
 
